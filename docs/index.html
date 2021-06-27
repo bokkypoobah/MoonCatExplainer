@@ -58,8 +58,7 @@
 
         <div>
           <b-card no-body class="mt-1">
-            <b-tabs card>
-
+            <b-tabs card v-model="tabIndex">
               <b-tab title="MoonCat Details" active>
                 <b-card-text>
                   <img :src="generateMoonCatImage(catId, 4)" />
@@ -90,11 +89,11 @@
                 </b-card-text>
               </b-tab>
 
-              <b-tab active title="Search MoonCats">
+              <b-tab title="Search MoonCats">
                 <b-card-text>
                   <div class="d-flex m-0 p-0" style="height: 37px;">
                     <div>
-                      <b-form-input type="text" size="sm" v-model.trim="searchString" debounce="600" placeholder="Search..." v-b-popover.hover="'Search'"></b-form-input>
+                      <b-form-input type="text" size="sm" v-model.trim="searchString" debounce="600" placeholder="Search..." v-b-popover.hover="'Search by rescueIndex, catId, blockNumber, tx or rescuer address'"></b-form-input>
                     </div>
                     <div class="pl-1">
                       <b-form-select size="sm" v-model="searchYear" :options="searchYearOptions"></b-form-select>
@@ -146,6 +145,9 @@
                   </div>
                   <div v-if="view == 'list'">
                     <b-table small :fields="fields" :items="getMoonCatDataSearchResultsPage" responsive="sm">
+                      <template #cell(catId)="data">
+                        <b-link @click="loadCat(data.item.catId)" v-b-popover.hover="'View details'" class="card-link">{{ data.item.catId }}</b-link>
+                      </template>
                       <template #cell(cat)="data">
                         <div v-if="displayAcclimated">
                           <b-img-lazy width="140%" :src="'https://api.mooncat.community/glow-image/' + data.item.catId" />
@@ -377,6 +379,7 @@
       window.app = new Vue({
         el: '#app',
         data: {
+          tabIndex: 0,
           catId: '0x0093bb08b0',
           searchSteps: null,
           abortSearch: false,
@@ -404,15 +407,15 @@
             { value: 'cards', text: 'Cards' },
             { value: 'list', text: 'List' },
           ],
-          displayAcclimated: true,
+          displayAcclimated: false,
           fields: [
             { key: 'rescueIndex', label: 'rescueIndex' },
             { key: 'catId', label: 'catId' },
             'cat',
             'block',
             'tx',
-            { key: 'timestamp', label: 'Date' },
             { key: 'by', label: 'By' },
+            { key: 'timestamp', label: 'Date' },
           ],
         },
         computed: {
@@ -494,17 +497,10 @@
               results1 = [];
               for (let i in MOONCATDATA) {
                 const d = MOONCATDATA[i];
-                if (d.rescueIndex == this.searchString || d.catId.includes(this.searchString) || d.block == this.searchString || d.by.includes(this.searchString)) {
+                if (d.rescueIndex == this.searchString || d.catId.includes(this.searchString) || d.block == this.searchString || d.tx.includes(this.searchString) || d.by.includes(this.searchString)) {
                   results1.push(d);
                 }
               }
-              // console.log(results1[0]);
-              // block: 4140409
-              // by: "0xedccc2ce220f286bf218390ad16e432d539e6890"
-              // catId: "0x00d658d50b"
-              // rescueIndex: "0"
-              // timestamp: 1502370691
-              // tx: "0xd31d05adb302131f0c31f1a001685f29eb3b2b66d2af3b90d1e2c7f22661db61"
             } else {
               results1 = MOONCATDATA;
             }
@@ -558,6 +554,10 @@
               return canvas.toDataURL();
             }
             return null;
+          },
+          loadCat(catId) {
+            this.catId = catId;
+            this.tabIndex = 0;
           },
           showModal() {
             var searchSeed = "8363e7eaae8e35b1c2db100a7b0fb9db1bc604a35ce1374d882690d0b1d888e2";
