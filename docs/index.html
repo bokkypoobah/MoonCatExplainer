@@ -94,10 +94,16 @@
                     <div class="pr-1">
                       <b-form-input type="text" size="sm" v-model.trim="searchString" debounce="600" placeholder="Search..." v-b-popover.hover="'Search'"></b-form-input>
                     </div>
+                    <div class="pl-1">
+                      <b-form-select size="lg" v-model="searchYear" :options="searchYearOptions"></b-form-select>
+                    </div>
+                    <div class="pl-1">
+                      {{ getMoonCatDataSearchResultsRows }} of {{ getMoonCatEffectiveTotalSupply }}
+                    </div>
                     <div class="pr-1 flex-grow-1">
                     </div>
                     <div class="pt-1 pr-1">
-                      <b-pagination size="sm" v-model="searchCurrentPage" :total-rows="searchTotalRows" :per-page="searchPerPage"></b-pagination>
+                      <b-pagination size="sm" v-model="searchCurrentPage" :total-rows="getMoonCatDataSearchResultsRows" :per-page="searchPerPage"></b-pagination>
                     </div>
                     <div class="pl-1">
                       <b-form-select size="lg" v-model="searchPerPage" :options="searchPerPageOptions"></b-form-select>
@@ -106,7 +112,7 @@
 
                   {{ searchCurrentPage }}
                   <b-card-group deck class="m-0">
-                    <div v-for="record in getMoonCatDataSearchResults">
+                    <div v-for="record in getMoonCatDataSearchResultsPage">
                       {{ record }}
                     </div>
                   </b-card-group>
@@ -323,8 +329,8 @@
           catId: '0x0093bb08b0',
           searchSteps: null,
           abortSearch: false,
-          searchString: null,
-          searchCurrentPage: 0,
+          searchString: '',
+          searchCurrentPage: 1,
           searchTotalRows: 25440,
           searchPerPage: 10,
           searchPerPageOptions: [
@@ -333,6 +339,15 @@
             { value: 1000, text: '1,000 per page' },
             { value: 1000, text: '10,000 per page' },
             { value: 100000, text: 'All' }
+          ],
+          searchYear: null,
+          searchYearOptions: [
+            { value: null, text: 'All' },
+            { value: 2017, text: '2017' },
+            { value: 2018, text: '2018' },
+            { value: 2019, text: '2019' },
+            { value: 2020, text: '2020' },
+            { value: 2021, text: '2021' },
           ]
         },
         computed: {
@@ -383,7 +398,6 @@
           getCatIdColours() {
             if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
               const k = parseInt(this.catId.substring(4, 6), 16) % 128;
-              console.log("k: " + k);
               const results = moonCatDerivePalette(1, 2, 3, false);
               return results;
             }
@@ -404,19 +418,52 @@
             // - 25,600 - 256 = 25,344 rescued mooncats
             // - 5 x 16 = 96 genesis mooncats, 48 black and 48 white
             // 160 genesis mooncats are lost forever due to the keys being burnt
-            return 25440;
-          },
-          getMoonCatDesigns() {
-            return moonCatDesigns[0];
+            return MOONCATDATA.length; // 25440;
           },
           getMoonCatData() {
             return MOONCATDATA;
           },
           getMoonCatDataSearchResults() {
-            // console.log(this.page);
+            let results1;
+            if (this.searchString != null && this.searchString.length > 0) {
+              results1 = [];
+              for (let i in MOONCATDATA) {
+                const d = MOONCATDATA[i];
+                if (d.rescueIndex == this.searchString || d.catId.includes(this.searchString) || d.block == this.searchString || d.by.includes(this.searchString)) {
+                  results1.push(d);
+                }
+              }
+              // console.log(results1[0]);
+              // block: 4140409
+              // by: "0xedccc2ce220f286bf218390ad16e432d539e6890"
+              // catId: "0x00d658d50b"
+              // rescueIndex: "0"
+              // timestamp: 1502370691
+              // tx: "0xd31d05adb302131f0c31f1a001685f29eb3b2b66d2af3b90d1e2c7f22661db61"
+            } else {
+              results1 = MOONCATDATA;
+            }
+            let results2;
+            if (this.searchYear != null) {
+              results2 = [];
+              for (let i in results1) {
+                const d = results1[i];
+                if (new Date(d.timestamp * 1000).getFullYear() == this.searchYear) {
+                  results2.push(d);
+                }
+              }
+            } else {
+              results2 = results1;
+            }
+            return results2;
+          },
+          getMoonCatDataSearchResultsPage() {
             const currentPage = this.searchCurrentPage;
             const perPage = this.searchPerPage;
-            return MOONCATDATA.slice((currentPage - 1) * perPage, currentPage * perPage);
+            return this.getMoonCatDataSearchResults.slice((currentPage - 1) * perPage, currentPage * perPage);
+          },
+          getMoonCatDataSearchResultsRows() {
+            return this.getMoonCatDataSearchResults.length;
           },
           showAlert() {
             // console.log(ethers.utils.hashMessage("Hello World"));
@@ -426,7 +473,6 @@
         },
         methods: {
           generateMoonCatImage(catId, size) {
-            console.log("moonCatDesigns.length: " + moonCatDesigns.length);
             if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
               size = size || 10;
               var data = moonCatParser(catId);
@@ -476,9 +522,7 @@
           }
         },
         mounted() {
-          console.log("mounted");
           hljs.highlightAll();
-          console.log("highlighted");
         }
       })
     </script>
