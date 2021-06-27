@@ -100,9 +100,12 @@
                       <b-form-select size="sm" v-model="searchYear" :options="searchYearOptions"></b-form-select>
                     </div>
                     <div class="pl-1">
-                      {{ getMoonCatDataSearchResultsRows }} of {{ getMoonCatEffectiveTotalSupply }}
+                      {{ getMoonCatDataSearchResultsRows }}/{{ getMoonCatEffectiveTotalSupply }}
                     </div>
                     <div class="pr-1 flex-grow-1">
+                    </div>
+                    <div class="pl-1">
+                      <b-form-checkbox size="sm" v-model="displayAcclimated" class="pt-1">Acclimated</b-form-select>
                     </div>
                     <div class="pl-1">
                       <b-form-select size="sm" v-model="view" :options="viewOptions"></b-form-select>
@@ -119,13 +122,19 @@
                     <b-card-group deck>
                       <div v-for="record in getMoonCatDataSearchResultsPage">
                         <!-- <b-card body-class="p-1 d-flex align-items-end justify-content-center" img-bottom img-center header-class="p-1" footer-class="p-2" style="width: 10rem; height: 12.2rem;" img-top class="m-1 p-0 text-center text-bottom position-relative"> -->
-                        <b-card style="width: 10rem; height: 14rem;">
+                        <b-card style="width: 10rem; height: 14rem;" class="mt-1">
                           <template #header>
                             <span variant="secondary" class="small truncate">
                               {{ record.rescueIndex + ': ' + record.catId }}
                             </span>
                           </template>
-                          <b-img-lazy width="100%" :src="generateMoonCatImage(record.catId, 4)" />
+                          <div v-if="displayAcclimated">
+                            <b-img-lazy width="140%" :src="'https://api.mooncat.community/glow-image/' + record.catId" />
+                          </div>
+                          <div v-else>
+                            <b-img-lazy width="100%" :src="generateMoonCatImage(record.catId, 4)" />
+                          </div>
+
                           <!--
                           <template #footer>
                             {{ getFooter(slumDoge, rescueIndex) }}
@@ -136,11 +145,28 @@
                     </b-card-group>
                   </div>
                   <div v-if="view == 'list'">
-                    <b-card-group deck class="m-0">
-                      <div v-for="record in getMoonCatDataSearchResultsPage">
-                        {{ record }}
-                      </div>
-                    </b-card-group>
+                    <b-table small :fields="fields" :items="getMoonCatDataSearchResultsPage" responsive="sm">
+                      <template #cell(cat)="data">
+                        <div v-if="displayAcclimated">
+                          <b-img-lazy width="140%" :src="'https://api.mooncat.community/glow-image/' + data.item.catId" />
+                        </div>
+                        <div v-else>
+                          <b-img-lazy width="100%" :src="generateMoonCatImage(data.item.catId, 4)" />
+                        </div>
+                      </template>
+                      <template #cell(block)="data">
+                        <b-link :href="'https://etherscan.io/block/' + data.item.block" class="card-link" target="_blank">{{ data.item.block }}</b-link>
+                      </template>
+                      <template #cell(tx)="data">
+                        <b-link :href="'https://etherscan.io/tx/' + data.item.tx" class="card-link" target="_blank">{{ data.item.tx.substring(0, 12) + '...' }}</b-link>
+                      </template>
+                      <template #cell(by)="data">
+                        <b-link :href="'https://etherscan.io/address/' + data.item.by" class="card-link" target="_blank">{{ data.item.by.substring(0, 12) + '...' }}</b-link>
+                      </template>
+                      <template #cell(timestamp)="data">
+                        {{ new Date(data.item.timestamp * 1000).toUTCString() }}
+                      </template>
+                    </b-table>
                   </div>
                 </b-card-text>
               </b-tab>
@@ -357,12 +383,11 @@
           searchString: '',
           searchCurrentPage: 1,
           searchTotalRows: 25440,
-          searchPerPage: 10,
+          searchPerPage: 100,
           searchPerPageOptions: [
-            { value: 10, text: '10 per page' },
-            { value: 100, text: '100 per page' },
-            { value: 1000, text: '1,000 per page' },
-            { value: 1000, text: '10,000 per page' },
+            { value: 100, text: '100/p' },
+            { value: 1000, text: '1,000/p' },
+            { value: 1000, text: '10,000/p' },
             { value: 100000, text: 'All' }
           ],
           searchYear: null,
@@ -374,11 +399,21 @@
             { value: 2020, text: '2020' },
             { value: 2021, text: '2021' },
           ],
-          view: 'cards',
+          view: 'list', // 'cards',
           viewOptions: [
             { value: 'cards', text: 'Cards' },
             { value: 'list', text: 'List' },
-          ]
+          ],
+          displayAcclimated: true,
+          fields: [
+            { key: 'rescueIndex', label: 'rescueIndex' },
+            { key: 'catId', label: 'catId' },
+            'cat',
+            'block',
+            'tx',
+            { key: 'timestamp', label: 'Date' },
+            { key: 'by', label: 'By' },
+          ],
         },
         computed: {
           getCatIdGenesis() {
