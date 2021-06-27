@@ -53,50 +53,78 @@
           </b-navbar>
         </div>
 
-        <br />
-        <br />
+        <div>
+          <b-card no-body>
+            <b-tabs card>
+
+              <b-tab title="MoonCat Details" active>
+                <b-card-text>
+                  <img :src="generateMoonCatImage(catId, 4)" />
+
+                  <!-- <b-button variant="success" @click="showModal">Find Cat</b-button> -->
+
+                  <b-form-group
+                    horizontal
+                    :label-cols="4"
+                    description="e.g., 0x0093bb08b0 for MoonCat #721"
+                    label="Enter catId"
+                  >
+                    <b-form-input v-model.trim="catId"></b-form-input>
+                  </b-form-group>
+
+                  <!-- <b-alert variant="success" :show="showAlert">Hello {{ catId }}</b-alert> -->
+                  getCatIdGenesis: {{ getCatIdGenesis }} <br />
+                  getCatIdK: {{ getCatIdK }} <br />
+                  getCatIdR: {{ getCatIdR }} <br />
+                  getCatIdG: {{ getCatIdG }} <br />
+                  getCatIdB: {{ getCatIdB }} <br />
+                  getCatIdInverted: {{ getCatIdInverted }} <br />
+                  getCatIdDesign:<br />
+                   {{ getCatIdDesign }} <br />
+                  getCatIdColours: {{ getCatIdColours }} <br />
+                  getCatIdData:<br />
+                   {{ getCatIdData }} <br />
+                </b-card-text>
+              </b-tab>
+
+              <b-tab active title="Search MoonCats">
+                <b-card-text>
+                  (Not working yet)
+                  <div class="d-flex m-0 p-0" style="height: 37px;">
+                    <div class="pr-1">
+                      <b-form-input type="text" size="sm" v-model.trim="searchString" debounce="600" placeholder="Search..." v-b-popover.hover="'Search'"></b-form-input>
+                    </div>
+                    <div class="pr-1 flex-grow-1">
+                    </div>
+                    <div class="pt-1 pr-1">
+                      <b-pagination size="sm" v-model="searchCurrentPage" :total-rows="searchTotalRows" :per-page="searchPerPage"></b-pagination>
+                    </div>
+                    <div class="pl-1">
+                      <b-form-select size="lg" v-model="searchPerPage" :options="searchPerPageOptions"></b-form-select>
+                    </div>
+                    <!--
+                    <div class="pr-1">
+                      <b-button size="sm" class="m-0 p-0" href="#" @click="recalculate('new', $event); $bvModal.show('bv-modal-optino')" variant="link" v-b-popover.hover="'Mint Optino'"><b-icon-pencil-square shift-v="-2" font-scale="1.4"></b-icon-pencil-square></b-button>
+                    </div>
+                    -->
+                  </div>
 
 
-        <img :src="generateMoonCatImage(catId, 4)" />
 
-        <!-- <b-button variant="success" @click="showModal">Find Cat</b-button> -->
+                  {{ searchCurrentPage }}
+                  <b-card-group deck class="m-0">
+                    <div v-for="record in getMoonCatDetailsByRescueOrdersSearchResults">
+                      {{ record }}
+                    </div>
+                  </b-card-group>
+                </b-card-text>
+              </b-tab>
 
-        <b-form-group
-          horizontal
-          :label-cols="4"
-          description="e.g., 0x0093bb08b0 for MoonCat #721"
-          label="Enter catId"
-        >
-          <b-form-input v-model.trim="catId"></b-form-input>
-        </b-form-group>
+              <b-tab title="Ponderware's mooncatparser.js">
+                <b-card-text>Tab contents 2
 
-        <!-- <b-alert variant="success" :show="showAlert">Hello {{ catId }}</b-alert> -->
-        getCatIdGenesis: {{ getCatIdGenesis }} <br />
-        getCatIdK: {{ getCatIdK }} <br />
-        getCatIdR: {{ getCatIdR }} <br />
-        getCatIdG: {{ getCatIdG }} <br />
-        getCatIdB: {{ getCatIdB }} <br />
-        getCatIdInverted: {{ getCatIdInverted }} <br />
-        getCatIdDesign:<br />
-         {{ getCatIdDesign }} <br />
-        getCatIdColours: {{ getCatIdColours }} <br />
-        getCatIdData:<br />
-         {{ getCatIdData }} <br />
-
-
-
-        <p>
-        References:
-          <br />
-          <b-link href="https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js" target="_blank">https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js</b-link>
-          <br />
-          <b-link href="https://mooncatrescue.com/adopt.html" target="_blank">https://mooncatrescue.com/adopt.html</b-link>
-          <br />
-          <b-link href="https://github.com/bokkypoobah/MoonCatExplainer" target="_blank">https://github.com/bokkypoobah/MoonCatExplainer</b-link>
-        </p>
-
-        From <b-link href="https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js" target="_blank">https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js</b-link>:
-        <pre><code class="language-javascript">"use strict";
+                  From <b-link href="https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js" target="_blank">https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js</b-link>:
+                  <pre><code class="language-javascript">"use strict";
 
 (function(){
     var root = this;
@@ -272,8 +300,25 @@
         root.mooncatparser = mooncatparser;
     }
 }).call(this);
-        </code></pre>
+                  </code></pre>
 
+                </b-card-text>
+              </b-tab>
+              <b-tab title="References">
+                <b-card-text>
+                  References:
+                    <br />
+                    <b-link href="https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js" target="_blank">https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js</b-link>
+                    <br />
+                    <b-link href="https://mooncatrescue.com/adopt.html" target="_blank">https://mooncatrescue.com/adopt.html</b-link>
+                    <br />
+                    <b-link href="https://github.com/bokkypoobah/MoonCatExplainer" target="_blank">https://github.com/bokkypoobah/MoonCatExplainer</b-link>
+
+                </b-card-text>
+              </b-tab>
+            </b-tabs>
+          </b-card>
+        </div>
       </b-container>
     </div>
 
@@ -285,11 +330,20 @@
           catId: '0x0093bb08b0',
           searchSteps: null,
           abortSearch: false,
+          searchString: null,
+          searchCurrentPage: 0,
+          searchTotalRows: 100,
+          searchPerPage: 10,
+          searchPerPageOptions: [
+            { value: 10, text: '10 per page' },
+            { value: 100, text: '100 per page' },
+            { value: 1000, text: '1,000 per page' },
+            { value: 1000, text: '10,000 per page' },
+            { value: 100000, text: 'All' }
+          ]
         },
         computed: {
           getCatIdGenesis() {
-            console.log(this.catId);
-            console.table(hljs);
             if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 4) {
               return this.catId.substring(2, 4);
             }
@@ -322,7 +376,6 @@
           getCatIdInverted() {
             if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 6) {
               const k = parseInt(this.catId.substring(4, 6), 16) % 128;
-              // console.log("k: " + k);
               return k >= 128;
             }
             return null;
@@ -350,38 +403,24 @@
             }
             return null;
           },
-
-
-          // var size = size || 10;
-        	// var invert = k >= 128;
-        	// k = k % 128;
-        	// var design = designs[k].split(".");
-        	// var colors;
-        	// if(genesis){
-        	//     if(k % 2 === 0 && invert || k % 2 === 1 && !invert){
-        	// 	colors = [null, "#555555", "#d3d3d3", "#ffffff", "#aaaaaa", "#ff9999"];
-        	//     }else{
-        	// 	colors = [null, "#555555", "#222222", "#111111", "#bbbbbb", "#ff9999"];
-        	//     }
-        	// }else{
-        	//     colors = derivePalette(r, g, b, invert);
-        	// }
-          //
-        	// return design.map(function(row){
-        	//     return row.split("").map(function(cell){
-        	// 	return colors[cell];
-        	//     })
-        	// })
-
-
           getMoonCatTotalSupply() {
             return moonCatTotalSupply;
           },
           getMoonCatEffectiveTotalSupply() {
+            // totalSupply is 25,440 consisting of:
+            // - 25,600 - 256 = 25,344 rescued mooncats
+            // - 5 x 16 = 96 genesis mooncats, 48 black and 48 white
+            // 160 genesis mooncats are lost forever due to the keys being burnt
             return 25440;
           },
           getMoonCatDesigns() {
             return moonCatDesigns[0];
+          },
+          getMoonCatDetailsByRescueOrders() {
+            return moonCatDetailsByRescueOrders;
+          },
+          getMoonCatDetailsByRescueOrdersSearchResults() {
+            return moonCatDetailsByRescueOrders.slice(0, 10);
           },
           showAlert() {
             // console.log(ethers.utils.hashMessage("Hello World"));
