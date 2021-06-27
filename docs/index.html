@@ -54,10 +54,10 @@
         </div>
 
         <div>
-          <b-card no-body>
-            <b-tabs card>
+          <b-card no-body class="mt-1">
+            <b-tabs pills card vertical end>
 
-              <b-tab title="MoonCat Details" active>
+              <b-tab active title="MoonCat Details" active>
                 <b-card-text>
                   <img :src="generateMoonCatImage(catId, 4)" />
 
@@ -87,7 +87,7 @@
                 </b-card-text>
               </b-tab>
 
-              <b-tab active title="Search MoonCats">
+              <b-tab title="Search MoonCats">
                 <b-card-text>
                   (Not working yet)
                   <div class="d-flex m-0 p-0" style="height: 37px;">
@@ -120,7 +120,7 @@
                 </b-card-text>
               </b-tab>
 
-              <b-tab title="Ponderware's mooncatparser.js">
+              <b-tab title="mooncatparser.js">
                 <b-card-text>Tab contents 2
 
                   From <b-link href="https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js" target="_blank">https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js</b-link>:
