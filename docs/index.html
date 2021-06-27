@@ -17,6 +17,7 @@
     <script src="js/bootstrap-vue.js"></script>
     <script src="js/ethers-5.2.umd.min.js"></script>
     <script src="MoonCatRescueEventsResults.js"></script>
+    <script src="js/mooncatparser.js"></script>
 
     <link rel="apple-touch-icon" sizes="57x57" href="images/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="images/apple-icon-60x60.png">
@@ -41,11 +42,21 @@
     <div id="app">
       <b-container>
         <b-jumbotron header="MoonCat Explainer" lead="How MoonCats Come To Live">
+          <img src="images/MoonCat_721.png" style="max-width: 45px; margin-top: -4px;" alt="MoonCat #721" v-b-popover.hover.bottom="'#721: Princess Leia Peach ❤️s U'" class="ml-3"/>
+          TotalSupply: Effective {{ getMoonCatEffectiveTotalSupply }}, hardcoded {{ getMoonCatTotalSupply }}
+
+          <!--
           <p>For more information visit our website</p>
           <b-btn variant="primary" href="https://mooncatrescue.com/adopt.html">MoonCat Adoption</b-btn>
+          -->
         </b-jumbotron>
 
-        TotalSupply: Effective {{ getMoonCatEffectiveTotalSupply }}, hardcoded {{ getMoonCatTotalSupply }}
+
+
+        <br />
+        <br />
+
+        <img :src="generateMoonCatImage(catId, 4)" />
 
         <b-button variant="success" @click="showModal">Find Cat</b-button>
 
@@ -59,7 +70,11 @@
         </b-form-group>
 
         <b-alert variant="success" :show="showAlert">Hello {{ catId }}</b-alert>
-
+        getCatIdGenesis: {{ getCatIdGenesis }}
+        getCatIdK: {{ getCatIdK }}
+        getCatIdR: {{ getCatIdR }}
+        getCatIdG: {{ getCatIdG }}
+        getCatIdB: {{ getCatIdB }}
 
 
         <p>
@@ -75,11 +90,42 @@
       window.app = new Vue({
         el: '#app',
         data: {
-          catId: '',
+          catId: '0x0093bb08b0',
           searchSteps: null,
           abortSearch: false,
         },
         computed: {
+          getCatIdGenesis() {
+            console.log(this.catId);
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 4) {
+              return this.catId.substring(2, 4);
+            }
+            return null;
+          },
+          getCatIdK() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 6) {
+              return this.catId.substring(4, 6);
+            }
+            return null;
+          },
+          getCatIdR() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 8) {
+              return this.catId.substring(6, 8);
+            }
+            return null;
+          },
+          getCatIdG() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 10) {
+              return this.catId.substring(8, 10);
+            }
+            return null;
+          },
+          getCatIdB() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
+              return this.catId.substring(10, 12);
+            }
+            return null;
+          },
           getMoonCatTotalSupply() {
             return moonCatTotalSupply;
           },
@@ -88,10 +134,35 @@
           },
           showAlert() {
             // console.log(ethers.utils.hashMessage("Hello World"));
-            return this.catId.length > 4 ? true : false
+            // return this.catId.length > 4 ? true : false
+            return true;
           }
         },
         methods: {
+          generateMoonCatImage(catId, size) {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
+              console.log(catId);
+              size = size || 10;
+              var data = mooncatparser(catId);
+              // console.log(JSON.stringify(data));
+              var canvas = document.createElement("canvas");
+              canvas.width = size * data.length;
+              canvas.height = size * data[1].length;
+              var ctx = canvas.getContext("2d");
+
+              for(var i = 0; i < data.length; i++){
+                for(var j = 0; j < data[i].length; j++){
+                  var color = data[i][j];
+                  if(color){
+                    ctx.fillStyle = color;
+                    ctx.fillRect(i * size, j * size, size, size);
+                  }
+                }
+              }
+              return canvas.toDataURL();
+            }
+            return null;
+          },
           showModal() {
             var searchSeed = "8363e7eaae8e35b1c2db100a7b0fb9db1bc604a35ce1374d882690d0b1d888e2";
 
