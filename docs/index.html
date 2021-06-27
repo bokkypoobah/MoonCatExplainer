@@ -18,7 +18,7 @@
     <script src="js/bootstrap-vue.js"></script>
     <script src="js/ethers-5.2.umd.min.js"></script>
     <script src="js/highlight.min.js"></script>
-    <script src="MoonCatRescueEventsResults.js"></script>
+    <script src="MoonCatData.js"></script>
     <script src="mooncatfunctions.js"></script>
     <script src="js/mooncatparser.js"></script>
 
@@ -102,18 +102,11 @@
                     <div class="pl-1">
                       <b-form-select size="lg" v-model="searchPerPage" :options="searchPerPageOptions"></b-form-select>
                     </div>
-                    <!--
-                    <div class="pr-1">
-                      <b-button size="sm" class="m-0 p-0" href="#" @click="recalculate('new', $event); $bvModal.show('bv-modal-optino')" variant="link" v-b-popover.hover="'Mint Optino'"><b-icon-pencil-square shift-v="-2" font-scale="1.4"></b-icon-pencil-square></b-button>
-                    </div>
-                    -->
                   </div>
-
-
 
                   {{ searchCurrentPage }}
                   <b-card-group deck class="m-0">
-                    <div v-for="record in getMoonCatDetailsByRescueOrdersSearchResults">
+                    <div v-for="record in getMoonCatDataSearchResults">
                       {{ record }}
                     </div>
                   </b-card-group>
@@ -332,7 +325,7 @@
           abortSearch: false,
           searchString: null,
           searchCurrentPage: 0,
-          searchTotalRows: 100,
+          searchTotalRows: 25440,
           searchPerPage: 10,
           searchPerPageOptions: [
             { value: 10, text: '10 per page' },
@@ -416,11 +409,14 @@
           getMoonCatDesigns() {
             return moonCatDesigns[0];
           },
-          getMoonCatDetailsByRescueOrders() {
-            return moonCatDetailsByRescueOrders;
+          getMoonCatData() {
+            return MOONCATDATA;
           },
-          getMoonCatDetailsByRescueOrdersSearchResults() {
-            return moonCatDetailsByRescueOrders.slice(0, 10);
+          getMoonCatDataSearchResults() {
+            // console.log(this.page);
+            const currentPage = this.searchCurrentPage;
+            const perPage = this.searchPerPage;
+            return MOONCATDATA.slice((currentPage - 1) * perPage, currentPage * perPage);
           },
           showAlert() {
             // console.log(ethers.utils.hashMessage("Hello World"));
