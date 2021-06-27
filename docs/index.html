@@ -17,6 +17,7 @@
     <script src="js/bootstrap-vue.js"></script>
     <script src="js/ethers-5.2.umd.min.js"></script>
     <script src="MoonCatRescueEventsResults.js"></script>
+    <script src="mooncatfunctions.js"></script>
     <script src="js/mooncatparser.js"></script>
 
     <link rel="apple-touch-icon" sizes="57x57" href="images/apple-icon-57x57.png">
@@ -70,11 +71,18 @@
         </b-form-group>
 
         <b-alert variant="success" :show="showAlert">Hello {{ catId }}</b-alert>
-        getCatIdGenesis: {{ getCatIdGenesis }}
-        getCatIdK: {{ getCatIdK }}
-        getCatIdR: {{ getCatIdR }}
-        getCatIdG: {{ getCatIdG }}
-        getCatIdB: {{ getCatIdB }}
+        getCatIdGenesis: {{ getCatIdGenesis }} <br />
+        getCatIdK: {{ getCatIdK }} <br />
+        getCatIdR: {{ getCatIdR }} <br />
+        getCatIdG: {{ getCatIdG }} <br />
+        getCatIdB: {{ getCatIdB }} <br />
+        getCatIdInverted: {{ getCatIdInverted }} <br />
+        getCatIdDesign:<br />
+         {{ getCatIdDesign }} <br />
+        getCatIdColours: {{ getCatIdColours }} <br />
+        getCatIdData:<br />
+         {{ getCatIdData }} <br />
+
 
 
         <p>
@@ -126,11 +134,69 @@
             }
             return null;
           },
+          getCatIdInverted() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 6) {
+              const k = parseInt(this.catId.substring(4, 6), 16) % 128;
+              // console.log("k: " + k);
+              return k >= 128;
+            }
+            return null;
+          },
+          getCatIdDesign() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 6) {
+              const k = parseInt(this.catId.substring(4, 6), 16) % 128;
+              return moonCatDesigns[k].split(".");
+            }
+            return null;
+          },
+          getCatIdColours() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
+              const k = parseInt(this.catId.substring(4, 6), 16) % 128;
+              console.log("k: " + k);
+              const results = moonCatDerivePalette(1, 2, 3, false);
+              return results;
+            }
+            return null;
+          },
+          getCatIdData() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
+              const results = moonCatParser(this.catId);
+              return results;
+            }
+            return null;
+          },
+
+
+          // var size = size || 10;
+        	// var invert = k >= 128;
+        	// k = k % 128;
+        	// var design = designs[k].split(".");
+        	// var colors;
+        	// if(genesis){
+        	//     if(k % 2 === 0 && invert || k % 2 === 1 && !invert){
+        	// 	colors = [null, "#555555", "#d3d3d3", "#ffffff", "#aaaaaa", "#ff9999"];
+        	//     }else{
+        	// 	colors = [null, "#555555", "#222222", "#111111", "#bbbbbb", "#ff9999"];
+        	//     }
+        	// }else{
+        	//     colors = derivePalette(r, g, b, invert);
+        	// }
+          //
+        	// return design.map(function(row){
+        	//     return row.split("").map(function(cell){
+        	// 	return colors[cell];
+        	//     })
+        	// })
+
+
           getMoonCatTotalSupply() {
             return moonCatTotalSupply;
           },
           getMoonCatEffectiveTotalSupply() {
             return 25440;
+          },
+          getMoonCatDesigns() {
+            return moonCatDesigns[0];
           },
           showAlert() {
             // console.log(ethers.utils.hashMessage("Hello World"));
@@ -143,7 +209,7 @@
             if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
               console.log(catId);
               size = size || 10;
-              var data = mooncatparser(catId);
+              var data = moonCatParser(catId);
               // console.log(JSON.stringify(data));
               var canvas = document.createElement("canvas");
               canvas.width = size * data.length;
