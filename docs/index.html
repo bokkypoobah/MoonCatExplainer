@@ -83,6 +83,15 @@
                   getCatIdInverted: {{ getCatIdInverted }} <br />
                   getCatIdDesign:<br />
                    {{ getCatIdDesign }} <br />
+                  getCatIdDesignTransposed:<br />
+                  <b-container>
+                    <b-row v-for="row in getCatIdDesignTransposed">
+                      <b-col v-for="col in row">
+                        {{ col }}
+                      </b-col>
+                    </b-row>
+                  </b-container>
+                  <br />
                   getCatIdColours: {{ getCatIdColours }} <br />
                   getCatIdData:<br />
                    {{ getCatIdData }} <br />
@@ -460,6 +469,26 @@
             if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 6) {
               const k = parseInt(this.catId.substring(4, 6), 16) % 128;
               return moonCatDesigns[k].split(".");
+            }
+            return null;
+          },
+          getCatIdDesignTransposed() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 6) {
+              const k = parseInt(this.catId.substring(4, 6), 16) % 128;
+              const design = moonCatDesigns[k].split(".");
+              const rows = design[0].length;
+              const cols = design.length;
+              console.log("rows: " + rows + ", cols: " + cols);
+              const output = [];
+              for (let row = 0; row < rows; row++) {
+                const line = [];
+                for (let col = 0; col < cols; col++) {
+                  line.push(design[col][row]);
+                }
+                output.push(line);
+              }
+              // console.log(output);
+              return output;
             }
             return null;
           },
