@@ -41,7 +41,16 @@
   </head>
   <body>
     <div id="app">
-      <b-container>
+      <b-container fluid class="m-3 p-3">
+        <b-navbar variant="light" fixed="top">
+          <b-navbar-brand to="/" variant="primary">
+            <img src="images/MoonCat_721.png" class="ml-3" style="max-width: 40px;" alt="MoonCat #721" v-b-popover.hover.bottom="'#721: Princess Leia Peach ❤️s U'" />
+            MoonCat Explainer
+          </b-navbar-brand>
+        </b-navbar>
+
+
+
         <b-jumbotron header="MoonCat Explainer" lead="How MoonCats Come To Live">
           <img src="images/MoonCat_721.png" style="max-width: 45px; margin-top: -4px;" alt="MoonCat #721" v-b-popover.hover.bottom="'#721: Princess Leia Peach ❤️s U'" class="ml-3"/>
           <!-- TotalSupply: Effective {{ getMoonCatEffectiveTotalSupply }}, hardcoded {{ getMoonCatTotalSupply }} -->
