@@ -15,6 +15,8 @@
 
     <script src="js/vue.js"></script>
     <script src="js/bootstrap-vue.js"></script>
+    <script src="js/ethers-5.2.umd.min.js"></script>
+    <script src="MoonCatRescueEventsResults.js"></script>
 
     <link rel="apple-touch-icon" sizes="57x57" href="images/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="images/apple-icon-60x60.png">
@@ -43,6 +45,10 @@
           <b-btn variant="primary" href="https://mooncatrescue.com/adopt.html">MoonCat Adoption</b-btn>
         </b-jumbotron>
 
+        TotalSupply: Effective {{ getMoonCatEffectiveTotalSupply }}, hardcoded {{ getMoonCatTotalSupply }}
+
+        <b-button variant="success" @click="showModal">Find Cat</b-button>
+
         <b-form-group
           horizontal
           :label-cols="4"
@@ -52,7 +58,15 @@
           <b-form-input v-model.trim="catId"></b-form-input>
         </b-form-group>
 
-        <b-alert variant="success" :show="showAlert">Hello {{ name }}</b-alert>
+        <b-alert variant="success" :show="showAlert">Hello {{ catId }}</b-alert>
+
+
+
+        <p>
+        References:
+        https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js
+
+        </p>
       </b-container>
     </div>
 
@@ -61,11 +75,48 @@
       window.app = new Vue({
         el: '#app',
         data: {
-          catId: ''
+          catId: '',
+          searchSteps: null,
+          abortSearch: false,
         },
         computed: {
+          getMoonCatTotalSupply() {
+            return moonCatTotalSupply;
+          },
+          getMoonCatEffectiveTotalSupply() {
+            return 25440;
+          },
           showAlert() {
+            // console.log(ethers.utils.hashMessage("Hello World"));
             return this.catId.length > 4 ? true : false
+          }
+        },
+        methods: {
+          showModal() {
+            var searchSeed = "8363e7eaae8e35b1c2db100a7b0fb9db1bc604a35ce1374d882690d0b1d888e2";
+
+            var seed;
+            var result = ethers.utils.hashMessage(new Date().toString());
+
+            async function hello() {
+              console.log("  In Hello");
+              // while (result.substring(0, 8) != "0x000000") {
+              while (result.substring(0, 6) != "0x0000") {
+                seed = result;
+                result = ethers.utils.hashMessage(seed + searchSeed, {encoding: 'hex'});
+              }
+              console.log("    seed=" + seed);
+              console.log("    result=" + result);
+              console.log("  Out of Hello");
+              return greeting = await Promise.resolve("Hello");
+            };
+
+            console.log("Before Hello");
+            hello(); // .then(alert);
+            console.log("After Hello");
+
+
+            // console.log(ethers.utils.hashMessage("Hello World"));
           }
         }
       })
