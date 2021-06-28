@@ -159,10 +159,14 @@
                       </template>
                       <template #cell(cat)="data">
                         <div v-if="displayAcclimated">
-                          <b-img-lazy width="140%" :src="'https://api.mooncat.community/glow-image/' + data.item.catId" />
+                          <b-link @click="loadCat(data.item.catId)" v-b-popover.hover="'View details'" class="card-link">
+                            <b-img-lazy width="140%" :src="'https://api.mooncat.community/glow-image/' + data.item.catId" />
+                          </b-link>
                         </div>
                         <div v-else>
-                          <b-img-lazy width="100%" :src="generateMoonCatImage(data.item.catId, 4)" />
+                          <b-link @click="loadCat(data.item.catId)" v-b-popover.hover="'View details'" class="card-link">
+                            <b-img-lazy width="100%" :src="generateMoonCatImage(data.item.catId, 4)" />
+                          </b-link>
                         </div>
                       </template>
                       <template #cell(block)="data">
