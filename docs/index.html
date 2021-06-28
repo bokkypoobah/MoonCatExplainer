@@ -82,15 +82,21 @@
                   getCatIdB: {{ getCatIdB }} <br />
                   getCatIdInverted: {{ getCatIdInverted }} <br />
                   getCatIdDesign:<br />
-                   {{ getCatIdDesign }} <br />
+                  <table>
+                    <tr v-for="row in getCatIdDesign">
+                      <template v-for="col in row">
+                        <td :bgcolor="getCatIdColours[col]" style="width: 25px">{{ col }}</td>
+                      </template>
+                    </tr>
+                  </table>
                   getCatIdDesignTransposed:<br />
-                  <b-container>
-                    <b-row v-for="row in getCatIdDesignTransposed">
-                      <b-col v-for="col in row">
-                        {{ col }}
-                      </b-col>
-                    </b-row>
-                  </b-container>
+                  <table>
+                    <tr v-for="row in getCatIdDesignTransposed">
+                      <template v-for="col in row">
+                        <td :bgcolor="getCatIdColours[col]" style="width: 25px">{{ col }}</td>
+                      </template>
+                    </tr>
+                  </table>
                   <br />
                   getCatIdColours: {{ getCatIdColours }} <br />
                   getCatIdData:<br />
