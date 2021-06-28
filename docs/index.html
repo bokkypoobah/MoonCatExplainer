@@ -80,6 +80,13 @@
                   getCatIdR: {{ getCatIdR }} <br />
                   getCatIdG: {{ getCatIdG }} <br />
                   getCatIdB: {{ getCatIdB }} <br />
+                  getCatIdRGB: {{ getCatIdRGB }} <br />
+                  <table>
+                    <tr>
+                      <td :bgcolor="getCatIdRGB" style="width: 25px; text-align: center; vertical-align: middle;">{{ getCatIdRGB }}</td>
+                    </tr>
+                  </table>
+
                   getCatIdInverted: {{ getCatIdInverted }} <br />
                   getCatIdDesign:<br />
                   <table>
@@ -527,6 +534,12 @@
           getCatIdB() {
             if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
               return this.catId.substring(10, 12);
+            }
+            return null;
+          },
+          getCatIdRGB() {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
+              return '#' + this.catId.substring(6, 12);
             }
             return null;
           },
