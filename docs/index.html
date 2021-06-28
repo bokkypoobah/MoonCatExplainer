@@ -24,6 +24,7 @@
     <script src="moonCatData.js"></script>
     <script src="mooncatfunctions.js"></script>
     <script src="js/mooncatparser.js"></script>
+    <script src="deploymentData.js"></script>
 
     <link rel="apple-touch-icon" sizes="57x57" href="images/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="images/apple-icon-60x60.png">
@@ -80,7 +81,7 @@
         <div>
           <b-card no-body class="mt-1">
             <b-tabs card v-model="tabIndex">
-              <b-tab title="MoonCat Details" active>
+              <b-tab title="MoonCat Details">
                 <b-card-text>
                   <img :src="generateMoonCatImage(catId, 4)" />
 
@@ -235,6 +236,8 @@
 
               <b-tab title="All 256 Designs">
                 <b-card-text>
+                  <p>128 designs + 128 designs inverted</p>
+
                   <img :src="generateMoonCatImage(catId, 4)" />
 
                   <!-- <b-button variant="success" @click="showModal">Find Cat</b-button> -->
@@ -282,6 +285,15 @@
                   </div>
                 </b-card-text>
               </b-tab>
+
+              <!--
+              <b-tab title="Data">
+                <b-card-text>
+                  <b-button variant="outline-success" @click="retrieveData">Retrieve Web3 Data</b-button>
+                </b-card-text>
+              </b-tab>
+              -->
+
               <b-tab title="mooncatparser.js">
                 <b-card-text>
                   From <b-link href="https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js" target="_blank">https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js</b-link>:
@@ -686,6 +698,34 @@
           disconnect() {
             this.connected = false;
           },
+          async retrieveData() {
+            console.log("retrieveData");
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+            const moonCatRescue = new ethers.Contract(MOONCATRESCUEADDRESS, MOONCATRESCUEABI, provider);
+            const totalSupply = await moonCatRescue.totalSupply();
+            console.log("retrieveData: execWeb3() moonCatRescue.totalSupply: " + totalSupply.toString());
+            const rescueIndex = await moonCatRescue.rescueIndex();
+            console.log("retrieveData: execWeb3() moonCatRescue.rescueIndex: " + rescueIndex.toString());
+            const catIds = await moonCatRescue.getCatIds();
+            console.log(JSON.stringify(catIds));
+            const owners = await moonCatRescue.getCatOwners();
+            console.log(JSON.stringify(owners));
+            const names = await moonCatRescue.getCatNames();
+            console.log(JSON.stringify(names));
+            // var moonCat = eth.contract(MOONCATRESCUEABI).at(MOONCATRESCUEADDRESS);
+            //
+            // // Testing - set to smaller number
+            // var MAX = 1000000;
+            //
+            // var totalSupply = moonCat.totalSupply();
+            // console.log("totalSupply: " + totalSupply);
+            // console.log("RESULT: moonCatTotalSupply = " + totalSupply + ";");
+            //
+            // var rescueIndex = moonCat.rescueIndex();
+            // console.log("rescueIndex: " + rescueIndex);
+            // console.log("RESULT: moonCatRescueIndex = " + rescueIndex + ";");
+          },
           generateMoonCatImage(catId, size) {
             if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
               size = size || 10;
@@ -731,10 +771,8 @@
           },
           showModal() {
             var searchSeed = "8363e7eaae8e35b1c2db100a7b0fb9db1bc604a35ce1374d882690d0b1d888e2";
-
             var seed;
             var result = ethers.utils.hashMessage(new Date().toString());
-
             async function hello() {
               console.log("  In Hello");
               // while (result.substring(0, 8) != "0x000000") {
@@ -747,12 +785,7 @@
               console.log("  Out of Hello");
               return greeting = await Promise.resolve("Hello");
             };
-
-            console.log("Before Hello");
             hello(); // .then(alert);
-            console.log("After Hello");
-
-
             // console.log(ethers.utils.hashMessage("Hello World"));
           }
         },
