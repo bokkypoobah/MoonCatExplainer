@@ -6,13 +6,21 @@ Some data from https://github.com/bokkypoobah/MoonCatListing
 
 <br />
 
-## Scraped Data
+## Scraped "Static" Data
 
 The script [scripts/01_getMoonCatRescueData.sh](scripts/01_getMoonCatRescueData.sh) retrieves the following data from the blockchain:
 
+### Get Cat Details By rescueIndex
+
+Using the following algorithm:
+
+```
 Iterate from 0 to rescueIndex (25440)
   var catId = moonCat.rescueOrder(i);
   var catDetails = moonCat.getCatDetails(catId);
+```
+
+To produce:
 
 ```
 moonCatDetailsByRescueOrders = [
@@ -24,7 +32,9 @@ moonCatDetailsByRescueOrders = [
 ...
 ```
 
-2. Retrieve all CatRescued events
+<br />
+
+### Retrieve all CatRescued events
 
 ```
 moonCatRescueEvents = [
@@ -36,7 +46,10 @@ moonCatRescueEvents = [
 ...
 ```
 
-2. Retrieve all GenesisCatsAdded events
+<br />
+
+### Retrieve all GenesisCatsAdded events
+
 ```
 moonCatGenesisCatsAddedEvents = [
 [0, 4140755, 41, "0xe581cc51814d91c690d9ab5306ce29d4969cf82d9885dc53c8ea6135995e845b", ["0xff00000ca7","0xff01000ca7","0xff02000ca7","0xff03000ca7","0xff04000ca7","0xff05000ca7","0xff06000ca7","0xff07000ca7","0xff08000ca7","0xff09000ca7","0xff0a000ca7","0xff0b000ca7","0xff0c000ca7","0xff0d000ca7","0xff0e000ca7","0xff0f000ca7"], 1502377959],
@@ -48,6 +61,9 @@ moonCatGenesisCatsAddedEvents = [
 ];
 ```
 
+<br />
+
+### Collate Data By rescueIndex
 
 The [scripts/02_generateReport.js](scripts/02_generateReport.js) collates the above information to produce [scripts/moonCatData.js](scripts/moonCatData.js), with a copy used for the web3 UI at [docs/moonCatData.js](docs/moonCatData.js):
 
@@ -79,3 +95,11 @@ const MOONCATDATA=[
   },
   ...
 ```
+
+<br />
+
+<br />
+
+Enjoy!
+
+(c) BokkyPooBah / Bok Consulting Pty Ltd - Jun 28 2019. The MIT Licence.
