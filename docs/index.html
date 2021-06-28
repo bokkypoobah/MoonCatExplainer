@@ -98,7 +98,20 @@
                     </tr>
                   </table>
                   <br />
-                  getCatIdColours: {{ getCatIdColours }} <br />
+                  getCatIdColours:<br />
+                  <table>
+                    <tr>
+                      <template v-for="(n, index) in 6" :key="index">
+                        <td style="width: 25px; text-align: center; vertical-align: middle;">{{ index + ':' + (getCatIdColours[index] == null ? 'null' : getCatIdColours[index]) }}</td>
+                      </template>
+                    </tr>
+                    <tr>
+                      <template v-for="(n, index) in 6" :key="index">
+                        <td :bgcolor="getCatIdColours[index]" style="width: 25px; text-align: center; vertical-align: middle;">{{ index + ':' + (getCatIdColours[index] == null ? 'null' : getCatIdColours[index]) }}</td>
+                      </template>
+                    </tr>
+                  </table>
+                  <br />
                   getCatIdData:<br />
                    {{ getCatIdData }} <br />
                 </b-card-text>
