@@ -192,6 +192,55 @@
                 </b-card-text>
               </b-tab>
 
+              <b-tab title="All 256 Designs">
+                <b-card-text>
+                  <img :src="generateMoonCatImage(catId, 4)" />
+
+                  <!-- <b-button variant="success" @click="showModal">Find Cat</b-button> -->
+
+                  <b-form-group
+                    horizontal
+                    :label-cols="4"
+                    description="e.g., 0x0093bb08b0 for MoonCat #721"
+                    label="Enter catId"
+                  >
+                    <b-form-input v-model.trim="catId"></b-form-input>
+                  </b-form-group>
+
+                  <b-form-checkbox size="sm" v-model="displayAcclimated" v-b-popover.hover="'Use Acclimated MoonCat images instead of generating the images from the catId'" class="pt-1">Acclimated</b-form-select>
+
+                  <div v-for="(n, index) in 128" :key="index">
+                    <b-card-group deck>
+                      <b-card style="width: 10rem; height: 14rem;" class="mt-1">
+                        <template #header>
+                          <span variant="secondary" class="small truncate">
+                            {{ catIdWithK(index) }}
+                          </span>
+                        </template>
+                        <div v-if="displayAcclimated">
+                          <b-img-lazy width="140%" :src="'https://api.mooncat.community/glow-image/' + catIdWithK(index)" />
+                        </div>
+                        <div v-else>
+                          <b-img-lazy width="100%" :src="generateMoonCatImage(catIdWithK(index), 4)" />
+                        </div>
+                      </b-card>
+                      <b-card style="width: 10rem; height: 14rem;" class="mt-1">
+                        <template #header>
+                          <span variant="secondary" class="small truncate">
+                            {{ catIdWithK(index + 128) }}
+                          </span>
+                        </template>
+                        <div v-if="displayAcclimated">
+                          <b-img-lazy width="140%" :src="'https://api.mooncat.community/glow-image/' + catIdWithK(index + 128)" />
+                        </div>
+                        <div v-else>
+                          <b-img-lazy width="100%" :src="generateMoonCatImage(catIdWithK(index + 128), 4)" />
+                        </div>
+                      </b-card>
+                    </b-card-group>
+                  </div>
+                </b-card-text>
+              </b-tab>
               <b-tab title="mooncatparser.js">
                 <b-card-text>
                   From <b-link href="https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js" target="_blank">https://github.com/ponderware/mooncatparser/blob/master/mooncatparser.js</b-link>:
@@ -595,6 +644,23 @@
           loadCat(catId) {
             this.catId = catId;
             this.tabIndex = 0;
+          },
+          toHex2(num) {
+            let str = num.toString(16);
+            if (str.length < 2) {
+              str = "0" + str;
+            }
+            return str;
+          },
+          catIdWithK(k) {
+            if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {
+              let str = k.toString(16);
+              if (str.length < 2) {
+                str = "0" + str;
+              }
+              return this.catId.substring(0, 4) + str + this.catId.substring(6);
+            }
+            return null;
           },
           showModal() {
             var searchSeed = "8363e7eaae8e35b1c2db100a7b0fb9db1bc604a35ce1374d882690d0b1d888e2";
