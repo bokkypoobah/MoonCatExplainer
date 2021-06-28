@@ -96,6 +96,8 @@ const MOONCATDATA=[
   ...
 ```
 
+You may find this data useful for your MoonCat projects.
+
 <br />
 
 <br />
