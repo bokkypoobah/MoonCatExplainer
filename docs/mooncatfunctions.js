@@ -186,3 +186,33 @@ function getMoonCatColors(catId){
   }
   return colors;
 }
+
+
+function getMoonCatHSV(catId){
+  if(catId.slice(0,2) == "0x"){
+    catId = catId.slice(2);
+  }
+  var bytes = moonCatHexToBytes(catId);
+  var genesis = bytes[0],
+      k = bytes[1],
+      r = bytes[2],
+      g = bytes[3],
+      b = bytes[4];
+
+  var size = size || 10;
+  var invert = k >= 128;
+  k = k % 128;
+  var design = moonCatDesigns[k].split(".");
+  var colors;
+  if(genesis){
+    if(k % 2 === 0 && invert || k % 2 === 1 && !invert){
+      colors = [null, "#555555", "#d3d3d3", "#ffffff", "#aaaaaa", "#ff9999"];
+    }else{
+      colors = [null, "#555555", "#222222", "#111111", "#bbbbbb", "#ff9999"];
+    }
+    return null;
+  }else{
+    var hsl = moonCatRGBToHSL(r, g, b);
+    return hsl;
+  }
+}

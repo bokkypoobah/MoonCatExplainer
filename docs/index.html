@@ -235,6 +235,11 @@
                         FurPattern: {{ data.item.kFurPattern }}<br />
                         Pose: {{ data.item.kPose }}<br />
                       </template>
+                      <template #cell(hsv)="data">
+                         h: {{ data.item.hsv == null ? 'n/a' : data.item.hsv[0] }}<br />
+                         s: {{ data.item.hsv == null ? 'n/a' : data.item.hsv[1] }}<br />
+                         v: {{ data.item.hsv == null ? 'n/a' : data.item.hsv[2] }}<br />
+                      </template>
 
                       <!--
                       <template #cell(block)="data">
@@ -558,6 +563,7 @@
             'cat',
             { key: 'rescued', label: 'Rescued' },
             { key: 'k', label: 'k' },
+            { key: 'hsv', label: 'hsv' },
             // { key: 'tx', label: 'tx' },
             // { key: 'by', label: 'by' },
             // { key: 'timestamp', label: 'date' },
@@ -707,8 +713,9 @@
                   d.kPose = "Stalking";
                 }
               }
+              d.hsv = getMoonCatHSV(d.catId);
 
-              if (i == 83) {
+              if (i == 721) {
                 console.log(JSON.stringify(d, null, 2));
               }
               results.push(d);
