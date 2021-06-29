@@ -21,7 +21,7 @@
 
     <script src="js/ethers-5.2.umd.min.js"></script>
     <script src="js/highlight.min.js"></script>
-    <script src="moonCatData.js"></script>
+    <script src="moonCatData.min.js"></script>
     <script src="mooncatfunctions.js"></script>
     <script src="js/mooncatparser.js"></script>
     <script src="deploymentData.js"></script>
@@ -185,10 +185,14 @@
                             </span>
                           </template>
                           <div v-if="displayAcclimated">
-                            <b-img-lazy width="140%" :src="'https://api.mooncat.community/glow-image/' + record.catId" />
+                            <b-link @click="loadCat(record.catId)" v-b-popover.hover="'View details'" class="card-link">
+                              <b-img-lazy width="140%" :src="'https://api.mooncat.community/glow-image/' + record.catId" />
+                            </b-link>
                           </div>
                           <div v-else>
-                            <b-img-lazy width="100%" :src="generateMoonCatImage(record.catId, 4)" />
+                            <b-link @click="loadCat(record.catId)" v-b-popover.hover="'View details'" class="card-link">
+                              <b-img-lazy width="100%" :src="generateMoonCatImage(record.catId, 4)" />
+                            </b-link>
                           </div>
 
                           <!--
@@ -218,16 +222,16 @@
                         </div>
                       </template>
                       <template #cell(block)="data">
-                        <b-link :href="'https://etherscan.io/block/' + data.item.block" class="card-link" target="_blank">{{ data.item.block }}</b-link>
+                        <b-link :href="'https://etherscan.io/block/' + data.item.rescued.block" class="card-link" target="_blank">{{ data.item.rescued.block }}</b-link>
                       </template>
                       <template #cell(tx)="data">
-                        <b-link :href="'https://etherscan.io/tx/' + data.item.tx" class="card-link" target="_blank">{{ data.item.tx.substring(0, 12) + '...' }}</b-link>
+                        <b-link :href="'https://etherscan.io/tx/' + data.item.rescued.tx" class="card-link" target="_blank">{{ data.item.rescued.tx.substring(0, 12) + '...' }}</b-link>
                       </template>
                       <template #cell(by)="data">
-                        <b-link :href="'https://etherscan.io/address/' + data.item.by" class="card-link" target="_blank">{{ data.item.by.substring(0, 12) + '...' }}</b-link>
+                        <b-link :href="'https://etherscan.io/address/' + data.item.rescued.by" class="card-link" target="_blank">{{ data.item.rescued.by.substring(0, 12) + '...' }}</b-link>
                       </template>
                       <template #cell(timestamp)="data">
-                        {{ new Date(data.item.timestamp * 1000).toUTCString() }}
+                        {{ new Date(data.item.rescued.timestamp * 1000).toUTCString() }}
                       </template>
                     </b-table>
                   </div>
@@ -286,13 +290,12 @@
                 </b-card-text>
               </b-tab>
 
-              <!--
-              <b-tab title="Data">
+              <b-tab title="My Wallet">
                 <b-card-text>
-                  <b-button variant="outline-success" @click="retrieveData">Retrieve Web3 Data</b-button>
+                  <b-button :disabled="!connected" variant="outline-success" @click="retrieveData">Retrieve Data</b-button>
+                  {{ owned }}
                 </b-card-text>
               </b-tab>
-              -->
 
               <b-tab title="mooncatparser.js">
                 <b-card-text>
@@ -502,6 +505,7 @@
         data: {
           connected: false,
           account: null,
+          owned: {},
           tabIndex: 0,
           catId: '0x0093bb08b0',
           searchSteps: null,
@@ -535,10 +539,10 @@
             { key: 'rescueIndex', label: 'rescueIndex' },
             { key: 'catId', label: 'catId' },
             'cat',
-            'block',
-            'tx',
-            { key: 'by', label: 'By' },
-            { key: 'timestamp', label: 'Date' },
+            { key: 'block', label: 'block' },
+            { key: 'tx', label: 'tx' },
+            { key: 'by', label: 'by' },
+            { key: 'timestamp', label: 'date' },
           ],
         },
         computed: {
@@ -631,23 +635,49 @@
             // - 25,600 - 256 = 25,344 rescued mooncats
             // - 5 x 16 = 96 genesis mooncats, 48 black and 48 white
             // 160 genesis mooncats are lost forever due to the keys being burnt
-            return MOONCATDATA.length; // 25440;
+            return this.getMoonCatData.length; // 25440;
           },
           getMoonCatData() {
-            return MOONCATDATA;
+            let results = [];
+            for (let i in MOONCATDATA) {
+              const d = MOONCATDATA[i];
+              if (i < 1) {
+                console.log(JSON.stringify(d, null, 2));
+              }
+              results.push(d);
+
+              // {
+              //   "rescueIndex": "0",
+              //   "catId": "0x00d658d50b",
+              //   "block": 4140409,
+              //   "tx": "0xd31d05adb302131f0c31f1a001685f29eb3b2b66d2af3b90d1e2c7f22661db61",
+              //   "timestamp": 1502370691,
+              //   "by": "0xedccc2ce220f286bf218390ad16e432d539e6890"
+              // }
+
+            }
+            return results;
+          },
+          getMoonCatCatIdToRescueIndex() {
+            let results = {};
+            for (let i in this.getMoonCatData) {
+              const d = this.getMoonCatData[i];
+              results[d.catId] = d.rescueIndex;
+            }
+            return results;
           },
           getMoonCatDataSearchResults() {
             let results1;
             if (this.searchString != null && this.searchString.length > 0) {
               results1 = [];
-              for (let i in MOONCATDATA) {
-                const d = MOONCATDATA[i];
+              for (let i in this.getMoonCatData) {
+                const d = this.getMoonCatData[i];
                 if (d.rescueIndex == this.searchString || d.catId.includes(this.searchString) || d.block == this.searchString || d.tx.includes(this.searchString) || d.by.includes(this.searchString)) {
                   results1.push(d);
                 }
               }
             } else {
-              results1 = MOONCATDATA;
+              results1 = this.getMoonCatData;
             }
             let results2;
             if (this.searchYear != null) {
@@ -703,28 +733,57 @@
             const provider = new ethers.providers.Web3Provider(window.ethereum);
 
             const moonCatRescue = new ethers.Contract(MOONCATRESCUEADDRESS, MOONCATRESCUEABI, provider);
-            const totalSupply = await moonCatRescue.totalSupply();
-            console.log("retrieveData: execWeb3() moonCatRescue.totalSupply: " + totalSupply.toString());
-            const rescueIndex = await moonCatRescue.rescueIndex();
-            console.log("retrieveData: execWeb3() moonCatRescue.rescueIndex: " + rescueIndex.toString());
-            const catIds = await moonCatRescue.getCatIds();
-            console.log(JSON.stringify(catIds));
-            const owners = await moonCatRescue.getCatOwners();
-            console.log(JSON.stringify(owners));
-            const names = await moonCatRescue.getCatNames();
-            console.log(JSON.stringify(names));
-            // var moonCat = eth.contract(MOONCATRESCUEABI).at(MOONCATRESCUEADDRESS);
-            //
-            // // Testing - set to smaller number
-            // var MAX = 1000000;
-            //
-            // var totalSupply = moonCat.totalSupply();
-            // console.log("totalSupply: " + totalSupply);
-            // console.log("RESULT: moonCatTotalSupply = " + totalSupply + ";");
-            //
-            // var rescueIndex = moonCat.rescueIndex();
-            // console.log("rescueIndex: " + rescueIndex);
-            // console.log("RESULT: moonCatRescueIndex = " + rescueIndex + ";");
+            // const totalSupply = await moonCatRescue.totalSupply();
+            // console.log("retrieveData: execWeb3() moonCatRescue.totalSupply: " + totalSupply.toString());
+            // const rescueIndex = await moonCatRescue.rescueIndex();
+            // console.log("retrieveData: execWeb3() moonCatRescue.rescueIndex: " + rescueIndex.toString());
+            // const catIds = await moonCatRescue.getCatIds();
+            // console.log(JSON.stringify(catIds));
+            // try {
+            //   const names = await moonCatRescue.getCatNames();
+            //   console.log(JSON.stringify(names));
+            // } catch (e) {
+            //   console.log(e.getMessage);
+            // }
+
+            let owned = {};
+            let attempts = 1;
+            let success = false;
+            do {
+              try {
+                console.log("Retrieving owners, attempt: " + attempts);
+                const owners = await moonCatRescue.getCatOwners();
+                const a = this.account.toString();
+                for (let i = 0; i < owners.length; i++) {
+                  const o = owners[i].toString().toLowerCase();
+                  if (!a.localeCompare(o)) {
+                    owned[i] = { rescueIndex: i, owner: o, contract: 'Original' };
+                  }
+                }
+                success = true;
+              } catch (e) {
+                console.log(e.getMessage);
+              }
+            } while (!success && attempts++ <= 10);
+
+            const acclimatedMoonCat = new ethers.Contract(ACCLIMATEDMOONCATADDRESS, ACCLIMATEDMOONCATABI, provider);
+            const tokensIdsByOwner = await acclimatedMoonCat.tokensIdsByOwner(this.account);
+            for (let i = 0; i < tokensIdsByOwner.length; i++) {
+              const rescueIndex = tokensIdsByOwner[i].toString();
+              owned[rescueIndex] = { rescueIndex: rescueIndex, owner: this.account, contract: 'Acclimated' };
+            }
+
+            // Testing
+            const account = "0x1c46718463877607b620aa26d10e75bc771ba24e";
+            const wrappedMoonCat = new ethers.Contract(WRAPPEDMOONCATADDRESS, WRAPPEDMOONCATABI, provider);
+            const balanceOf = await wrappedMoonCat.balanceOf(account);
+            for (let i = 0; i < balanceOf; i++) {
+              const tokenOfOwnerByIndex = await wrappedMoonCat.tokenOfOwnerByIndex(account, i);
+              const catId = await wrappedMoonCat._tokenIDToCatID(tokenOfOwnerByIndex);
+              const rescueIndex = this.getMoonCatCatIdToRescueIndex[catId];
+              owned[rescueIndex] = { rescueIndex: rescueIndex, owner: this.account, contract: 'Wrapped' };
+            }
+            this.owned = owned;
           },
           generateMoonCatImage(catId, size) {
             if (this.catId.substring(0, 2) == "0x" && this.catId.length >= 12) {

@@ -63,35 +63,256 @@ moonCatGenesisCatsAddedEvents = [
 
 <br />
 
+### Retrieve Data From api.mooncat.community
+
+The [scripts/02_getIndividualJSONs.sh](scripts/02_getIndividualJSONs.sh) retrieves MoonCat trait data from the api.mooncat.community server.
+
+Following is the data from `wget https://api.mooncat.community/traits/1 -O raw/1.json`
+
+```
+{
+    "attributes": [
+        {
+            "trait_type": "MoonCat Id",
+            "value": "0x000f53c2fd"
+        },
+        {
+            "max_value": 25439,
+            "trait_type": "Rescue Index",
+            "value": 1
+        },
+        {
+            "trait_type": "Classification",
+            "value": "Rescue"
+        },
+        {
+            "trait_type": "Rescue Year",
+            "value": "2017"
+        },
+        {
+            "trait_type": "Coat",
+            "value": "Sky Blue Tortie"
+        },
+        {
+            "trait_type": "Expression",
+            "value": "Smiling"
+        },
+        {
+            "trait_type": "Pose",
+            "value": "Stalking"
+        },
+        {
+            "trait_type": "Only Child?",
+            "value": "No"
+        },
+        {
+            "trait_type": "Has Twins?",
+            "value": "Yes"
+        },
+        {
+            "trait_type": "Has Mirrors?",
+            "value": "No"
+        },
+        {
+            "trait_type": "Has Clones?",
+            "value": "No"
+        }
+    ],
+    "background_color": "000000",
+    "description": "Sky Blue Smiling Tortie MoonCat",
+    "details": {
+        "catId": "0x000f53c2fd",
+        "classification": "rescue",
+        "cloneId": "0021330043660096e666caff99ffdecc",
+        "cloneSet": [
+            1
+        ],
+        "cloneSetSize": 1,
+        "contract": {
+            "address": "0xc3f733ca98e0dad0386979eb96fb1722a1a05e69",
+            "capabilities": [
+                "ERC20",
+                "ERC721",
+                "ERC998"
+            ],
+            "description": "MoonCatAcclimator",
+            "tokenId": 1
+        },
+        "expression": "smiling",
+        "facing": "left",
+        "glow": [
+            83,
+            194,
+            253
+        ],
+        "hasClones": false,
+        "hasMirrors": false,
+        "hasTwins": true,
+        "hue": "skyBlue",
+        "hueValue": 200,
+        "isAcclimated": true,
+        "isPale": false,
+        "litter": [
+            1,
+            2002,
+            9768,
+            22432,
+            23846,
+            25034
+        ],
+        "litterId": "0021330043660096e666caff99ffdec0",
+        "litterSize": 6,
+        "mirrorId": "0021330043660096e666caff99ffdecc",
+        "mirrorSet": [
+            1
+        ],
+        "mirrorSetSize": 1,
+        "name": null,
+        "onlyChild": false,
+        "owner": "0x4be972e5799b243180b2fc76468a1c8503281449",
+        "pattern": "tortie",
+        "pose": "stalking",
+        "rescueIndex": 1,
+        "rescueYear": 2017,
+        "rescuedBy": "0x4be972e5799b243180b2fc76468a1c8503281449",
+        "twinId": "0021330043660096e666caff99ffdec0",
+        "twinSet": [
+            1,
+            23846
+        ],
+        "twinSetSize": 2
+    },
+    "image": "https://api.mooncat.community/glow-image/0x000f53c2fd",
+    "name": "1: 0x000f53c2fd"
+}
+```
+
+<br />
+
 ### Collate Data By rescueIndex
 
-The [scripts/02_generateReport.js](scripts/02_generateReport.js) collates the above information to produce [scripts/moonCatData.js](scripts/moonCatData.js), with a copy used for the web3 UI at [docs/moonCatData.js](docs/moonCatData.js):
+The [scripts/03_generateReport.js](scripts/03_generateReport.js) collates the above information to produce [scripts/moonCatData.js](scripts/moonCatData.js) and [scripts/moonCatData.min.js](scripts/moonCatData.min.js), with a copy used for the web3 UI at [docs/moonCatData.min.js](docs/moonCatData.min.js):
 
 ```
 const MOONCATDATA=[
   {
     "rescueIndex": "0",
     "catId": "0x00d658d50b",
-    "block": 4140409,
-    "tx": "0xd31d05adb302131f0c31f1a001685f29eb3b2b66d2af3b90d1e2c7f22661db61",
-    "timestamp": 1502370691,
-    "by": "0xedccc2ce220f286bf218390ad16e432d539e6890"
-  },
-  {
-    "rescueIndex": "1",
-    "catId": "0x000f53c2fd",
-    "block": 4140423,
-    "tx": "0xf2bf93323fee385d8737675092452ce9994ff6c2843decc671bf3d0f94c65e0c",
-    "timestamp": 1502370981,
-    "by": "0x4be972e5799b243180b2fc76468a1c8503281449"
-  },
-  {
-    "rescueIndex": "2",
-    "catId": "0x0027518528",
-    "block": 4140505,
-    "tx": "0x9c0f6f619a6f2ac355cc71cb51e636906de805e08400f84227bdce188c5dad1e",
-    "timestamp": 1502372495,
-    "by": "0x2621ea417659ad69bae66af05ebe5788e533e5e7"
+    "rescued": {
+      "block": 4140409,
+      "tx": "0xd31d05adb302131f0c31f1a001685f29eb3b2b66d2af3b90d1e2c7f22661db61",
+      "timestamp": 1502370691,
+      "by": "0xedccc2ce220f286bf218390ad16e432d539e6890"
+    },
+    "name": "0: 0x00d658d50b",
+    "description": "Pale Chartreuse/Yellow Grumpy Tabby MoonCat",
+    "image": "https://api.mooncat.community/glow-image/0x00d658d50b",
+    "attributes": [
+      {
+        "trait_type": "MoonCat Id",
+        "value": "0x00d658d50b"
+      },
+      {
+        "trait_type": "Rescue Index",
+        "value": 0,
+        "max_value": 25439
+      },
+      {
+        "trait_type": "Classification",
+        "value": "Rescue"
+      },
+      {
+        "trait_type": "Rescue Year",
+        "value": "2017"
+      },
+      {
+        "trait_type": "Coat",
+        "value": "Pale Chartreuse Tabby"
+      },
+      {
+        "trait_type": "Expression",
+        "value": "Grumpy"
+      },
+      {
+        "trait_type": "Pose",
+        "value": "Pouncing"
+      },
+      {
+        "trait_type": "Only Child?",
+        "value": "No"
+      },
+      {
+        "trait_type": "Has Twins?",
+        "value": "Yes"
+      },
+      {
+        "trait_type": "Has Mirrors?",
+        "value": "No"
+      },
+      {
+        "trait_type": "Has Clones?",
+        "value": "No"
+      }
+    ],
+    "details": {
+      "hue": "chartreuse",
+      "onlyChild": false,
+      "isPale": true,
+      "litterId": "133300a0ff66fffa9927660057e60040",
+      "catId": "0x00d658d50b",
+      "expression": "grumpy",
+      "cloneSet": [
+        0
+      ],
+      "name": null,
+      "contract": {
+        "tokenId": 0,
+        "description": "MoonCatAcclimator",
+        "address": "0xc3f733ca98e0dad0386979eb96fb1722a1a05e69",
+        "capabilities": [
+          "ERC20",
+          "ERC721",
+          "ERC998"
+        ]
+      },
+      "facing": "right",
+      "hasTwins": true,
+      "litter": [
+        0,
+        10477,
+        20810
+      ],
+      "twinId": "133300a0ff66fffa9927660057e60050",
+      "classification": "rescue",
+      "hasClones": false,
+      "twinSetSize": 2,
+      "litterSize": 3,
+      "mirrorSetSize": 1,
+      "isAcclimated": true,
+      "pose": "pouncing",
+      "rescueIndex": 0,
+      "rescuedBy": "0xedccc2ce220f286bf218390ad16e432d539e6890",
+      "cloneId": "133300a0ff66fffa9927660057e60059",
+      "twinSet": [
+        0,
+        10477
+      ],
+      "rescueYear": 2017,
+      "mirrorId": "133300a0ff66fffa9927660057e60058",
+      "glow": [
+        88,
+        213,
+        11
+      ],
+      "owner": "0xedccc2ce220f286bf218390ad16e432d539e6890",
+      "mirrorSet": [
+        0
+      ],
+      "hasMirrors": false,
+      "cloneSetSize": 1,
+      "pattern": "tabby",
+      "hueValue": 97
+    }
   },
   ...
 ```
@@ -104,4 +325,4 @@ You may find this data useful for your MoonCat projects.
 
 Enjoy!
 
-(c) BokkyPooBah / Bok Consulting Pty Ltd - Jun 28 2019. The MIT Licence.
+(c) BokkyPooBah / Bok Consulting Pty Ltd - Jun 29 2019. The MIT Licence.
