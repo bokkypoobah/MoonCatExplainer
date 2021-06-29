@@ -751,7 +751,7 @@
               results2 = [];
               for (let i in results1) {
                 const d = results1[i];
-                if (new Date(d.timestamp * 1000).getFullYear() == this.searchYear) {
+                if (new Date(d.rescued.timestamp * 1000).getFullYear() == this.searchYear) {
                   results2.push(d);
                 }
               }
