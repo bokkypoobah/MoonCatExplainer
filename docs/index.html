@@ -228,8 +228,12 @@
                         At: {{ new Date(data.item.rescued.timestamp * 1000).toUTCString() }}
                       </template>
                       <template #cell(k)="data">
-                        {{ data.item.catId.substring(4, 6) }}
-                        {{ data.item.kBits.join() }}
+                         {{ data.item.catId.substring(4, 6) }} => [{{ data.item.kBits.join() }}]<br />
+                        Inverted: {{ data.item.kInverted }}<br />
+                        Facing: {{ data.item.kFacing }}<br />
+                        FaceDetails: {{ data.item.kFaceDetails }}<br />
+                        FurPattern: {{ data.item.kFurPattern }}<br />
+                        Pose: {{ data.item.kPose }}<br />
                       </template>
 
                       <!--
@@ -657,7 +661,54 @@
               const d = MOONCATDATA[i];
               const k = d.catId.substring(4, 6);
               d.kBits = this.toBin8(parseInt(d.catId.substring(4, 6), 16)).split("");
-              if (i == 53) {
+              if (d.catId.substring(2, 4) == "ff") {
+                const genesisCatIndex = d.catId.substring(4, 6);
+                d.kInverted = (parseInt(genesisCatIndex, 16) % 2) == 0 ? 'Not Inverted' : 'Inverted';
+              } else {
+                d.kInverted = d.kBits[0] == 0 ? 'Not Inverted' : 'Inverted';
+              }
+              d.kFacing = d.kBits[1] == 0 ? 'Left' : 'Right';
+              if (d.kBits[2] == 0) {
+                if (d.kBits[3] == 0) {
+                  d.kFaceDetails = "Smile";
+                } else {
+                  d.kFaceDetails = "Frown (look down)";
+                }
+              } else {
+                if (d.kBits[3] == 0) {
+                  d.kFaceDetails = "Frown (look up)";
+                } else {
+                  d.kFaceDetails = "Flat whiskers";
+                }
+              }
+              if (d.kBits[4] == 0) {
+                if (d.kBits[5] == 0) {
+                  d.kFurPattern = "Solid";
+                } else {
+                  d.kFurPattern = "Striped";
+                }
+              } else {
+                if (d.kBits[5] == 0) {
+                  d.kFurPattern = "Eyepatch";
+                } else {
+                  d.kFurPattern = "Half/half";
+                }
+              }
+              if (d.kBits[6] == 0) {
+                if (d.kBits[7] == 0) {
+                  d.kPose = "Standing";
+                } else {
+                  d.kPose = "Sleeping";
+                }
+              } else {
+                if (d.kBits[7] == 0) {
+                  d.kPose = "Pouncing";
+                } else {
+                  d.kPose = "Stalking";
+                }
+              }
+
+              if (i == 83) {
                 console.log(JSON.stringify(d, null, 2));
               }
               results.push(d);
