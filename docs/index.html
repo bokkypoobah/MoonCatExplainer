@@ -221,6 +221,18 @@
                           </b-link>
                         </div>
                       </template>
+                      <template #cell(rescued)="data">
+                        Block: <b-link :href="'https://etherscan.io/block/' + data.item.rescued.block" class="card-link" target="_blank">{{ data.item.rescued.block }}</b-link><br />
+                        Tx: <b-link :href="'https://etherscan.io/tx/' + data.item.rescued.tx" class="card-link" target="_blank">{{ data.item.rescued.tx.substring(0, 12) + '...' }}</b-link><br />
+                        By: <b-link :href="'https://etherscan.io/address/' + data.item.rescued.by" class="card-link" target="_blank">{{ data.item.rescued.by.substring(0, 12) + '...' }}</b-link><br />
+                        At: {{ new Date(data.item.rescued.timestamp * 1000).toUTCString() }}
+                      </template>
+                      <template #cell(k)="data">
+                        {{ data.item.catId.substring(4, 6) }}
+                        {{ data.item.kBits.join() }}
+                      </template>
+
+                      <!--
                       <template #cell(block)="data">
                         <b-link :href="'https://etherscan.io/block/' + data.item.rescued.block" class="card-link" target="_blank">{{ data.item.rescued.block }}</b-link>
                       </template>
@@ -233,6 +245,7 @@
                       <template #cell(timestamp)="data">
                         {{ new Date(data.item.rescued.timestamp * 1000).toUTCString() }}
                       </template>
+                      -->
                     </b-table>
                   </div>
                 </b-card-text>
@@ -539,10 +552,11 @@
             { key: 'rescueIndex', label: 'rescueIndex' },
             { key: 'catId', label: 'catId' },
             'cat',
-            { key: 'block', label: 'block' },
-            { key: 'tx', label: 'tx' },
-            { key: 'by', label: 'by' },
-            { key: 'timestamp', label: 'date' },
+            { key: 'rescued', label: 'Rescued' },
+            { key: 'k', label: 'k' },
+            // { key: 'tx', label: 'tx' },
+            // { key: 'by', label: 'by' },
+            // { key: 'timestamp', label: 'date' },
           ],
         },
         computed: {
@@ -641,7 +655,9 @@
             let results = [];
             for (let i in MOONCATDATA) {
               const d = MOONCATDATA[i];
-              if (i < 1) {
+              const k = d.catId.substring(4, 6);
+              d.kBits = this.toBin8(parseInt(d.catId.substring(4, 6), 16)).split("");
+              if (i == 53) {
                 console.log(JSON.stringify(d, null, 2));
               }
               results.push(d);
@@ -672,7 +688,7 @@
               results1 = [];
               for (let i in this.getMoonCatData) {
                 const d = this.getMoonCatData[i];
-                if (d.rescueIndex == this.searchString || d.catId.includes(this.searchString) || d.block == this.searchString || d.tx.includes(this.searchString) || d.by.includes(this.searchString)) {
+                if (d.rescueIndex == this.searchString || d.catId.includes(this.searchString) || d.rescued.block == this.searchString || d.rescued.tx.includes(this.searchString) || d.rescued.by.includes(this.searchString)) {
                   results1.push(d);
                 }
               }
@@ -813,7 +829,14 @@
           },
           toHex2(num) {
             let str = num.toString(16);
-            if (str.length < 2) {
+            while (str.length < 2) {
+              str = "0" + str;
+            }
+            return str;
+          },
+          toBin8(num) {
+            let str = num.toString(2);
+            while (str.length < 8) {
               str = "0" + str;
             }
             return str;
