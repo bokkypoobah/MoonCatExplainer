@@ -239,6 +239,7 @@
                          h: {{ data.item.hsv == null ? 'n/a' : data.item.hsv[0] }}<br />
                          s: {{ data.item.hsv == null ? 'n/a' : data.item.hsv[1] }}<br />
                          v: {{ data.item.hsv == null ? 'n/a' : data.item.hsv[2] }}<br />
+                         {{ data.item.colour }}
                       </template>
 
                       <!--
@@ -714,6 +715,36 @@
                 }
               }
               d.hsv = getMoonCatHSV(d.catId);
+              if (d.hsv) {
+                const h = d.hsv[0];
+                if (h > 345 || h < 15) {
+                  d.colour = "Red";
+                } else if (h < 45) {
+                  d.colour = "Orange";
+                } else if (h < 75) {
+                  d.colour = "Yellow";
+                } else if (h < 105) {
+                  d.colour = "Chatreuse";
+                } else if (h < 135) {
+                  d.colour = "Green";
+                } else if (h < 165) {
+                  d.colour = "Teal";
+                } else if (h < 195) {
+                  d.colour = "Cyan";
+                } else if (h < 225) {
+                  d.colour = "Sky Blue";
+                } else if (h < 255) {
+                  d.colour = "Blue";
+                } else if (h < 285) {
+                  d.colour = "Purple";
+                } else if (h < 315) {
+                  d.colour = "Magenta";
+                } else {
+                  d.colour = "Fuscia";
+                }
+              } else {
+                d.colour = "Black/White";
+              }
 
               if (i == 721) {
                 console.log(JSON.stringify(d, null, 2));
@@ -746,7 +777,7 @@
               results1 = [];
               for (let i in this.getMoonCatData) {
                 const d = this.getMoonCatData[i];
-                if (d.rescueIndex == this.searchString || d.catId.includes(this.searchString) || d.rescued.block == this.searchString || d.rescued.tx.includes(this.searchString) || d.rescued.by.includes(this.searchString)) {
+                if (d.rescueIndex == this.searchString || d.catId.includes(this.searchString) || d.rescued.block == this.searchString || d.rescued.tx.includes(this.searchString) || d.rescued.by.includes(this.searchString) || d.colour.includes(this.searchString)) {
                   results1.push(d);
                 }
               }
