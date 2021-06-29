@@ -207,7 +207,9 @@
                   <div v-if="view == 'list'">
                     <b-table small :fields="fields" :items="getMoonCatDataSearchResultsPage" responsive="sm">
                       <template #cell(catId)="data">
-                        <b-link @click="loadCat(data.item.catId)" v-b-popover.hover="'View details'" class="card-link">{{ data.item.catId }}</b-link>
+                        <b-link @click="loadCat(data.item.catId)" v-b-popover.hover="'View details'" class="card-link">{{ data.item.catId }}</b-link><br />
+                        <b-link :href="'https://mooncat.pro/' + data.item.catId + '/'" v-b-popover.hover="'View on MoonCat.pro'" target="_blank">mcp</b-link>
+                        <b-link :href="'https://rarity.tools/mooncats/view/' + data.item.rescueIndex" v-b-popover.hover="'View on MoonCat.pro'" target="_blank">rt</b-link>
                       </template>
                       <template #cell(cat)="data">
                         <div v-if="displayAcclimated">
@@ -228,7 +230,7 @@
                         At: {{ new Date(data.item.rescued.timestamp * 1000).toUTCString() }}
                       </template>
                       <template #cell(k)="data">
-                         {{ data.item.catId.substring(4, 6) }} => [{{ data.item.kBits.join() }}]<br />
+                        {{ data.item.catId.substring(4, 6) }} => [{{ data.item.kBits.join() }}]<br />
                         Inverted: {{ data.item.kInverted }}<br />
                         Facing: {{ data.item.kFacing }}<br />
                         FaceDetails: {{ data.item.kFaceDetails }}<br />
@@ -240,22 +242,8 @@
                          s: {{ data.item.hsv == null ? 'n/a' : data.item.hsv[1] }}<br />
                          v: {{ data.item.hsv == null ? 'n/a' : data.item.hsv[2] }}<br />
                          {{ data.item.colour }}
+                         {{ data.item.details.hueValue }}: {{ data.item.details.hue }}
                       </template>
-
-                      <!--
-                      <template #cell(block)="data">
-                        <b-link :href="'https://etherscan.io/block/' + data.item.rescued.block" class="card-link" target="_blank">{{ data.item.rescued.block }}</b-link>
-                      </template>
-                      <template #cell(tx)="data">
-                        <b-link :href="'https://etherscan.io/tx/' + data.item.rescued.tx" class="card-link" target="_blank">{{ data.item.rescued.tx.substring(0, 12) + '...' }}</b-link>
-                      </template>
-                      <template #cell(by)="data">
-                        <b-link :href="'https://etherscan.io/address/' + data.item.rescued.by" class="card-link" target="_blank">{{ data.item.rescued.by.substring(0, 12) + '...' }}</b-link>
-                      </template>
-                      <template #cell(timestamp)="data">
-                        {{ new Date(data.item.rescued.timestamp * 1000).toUTCString() }}
-                      </template>
-                      -->
                     </b-table>
                   </div>
                 </b-card-text>
@@ -716,50 +704,43 @@
               }
               d.hsv = getMoonCatHSV(d.catId);
               if (d.hsv) {
-                const h = d.hsv[0];
-                if (h > 345 || h < 15) {
-                  d.colour = "Red";
-                } else if (h < 45) {
-                  d.colour = "Orange";
-                } else if (h < 75) {
-                  d.colour = "Yellow";
-                } else if (h < 105) {
-                  d.colour = "Chatreuse";
-                } else if (h < 135) {
-                  d.colour = "Green";
-                } else if (h < 165) {
-                  d.colour = "Teal";
-                } else if (h < 195) {
-                  d.colour = "Cyan";
-                } else if (h < 225) {
-                  d.colour = "Sky Blue";
-                } else if (h < 255) {
-                  d.colour = "Blue";
-                } else if (h < 285) {
-                  d.colour = "Purple";
-                } else if (h < 315) {
-                  d.colour = "Magenta";
+                const h = parseInt(d.hsv[0] + 0.000001);
+                if (h > 345 || h <= 15) {
+                  d.colour = "red";
+                } else if (h <= 45) {
+                  d.colour = "orange";
+                } else if (h <= 75) {
+                  d.colour = "yellow";
+                } else if (h <= 105) {
+                  d.colour = "chartreuse";
+                } else if (h <= 135) {
+                  d.colour = "green";
+                } else if (h <= 165) {
+                  d.colour = "teal";
+                } else if (h <= 195) {
+                  d.colour = "cyan";
+                } else if (h <= 225) {
+                  d.colour = "skyBlue";
+                } else if (h <= 255) {
+                  d.colour = "blue";
+                } else if (h <= 285) {
+                  d.colour = "purple";
+                } else if (h <= 315) {
+                  d.colour = "magenta";
                 } else {
-                  d.colour = "Fuscia";
+                  d.colour = "fuchsia";
                 }
               } else {
-                d.colour = "Black/White";
+                const genesisCatIndex = parseInt(d.catId.substring(4, 6), 16);
+                d.colour =  genesisCatIndex % 2 == 0 ? "black" : "white";
               }
-
-              if (i == 721) {
-                console.log(JSON.stringify(d, null, 2));
+              // if (i == 721) {
+              //   console.log(JSON.stringify(d, null, 2));
+              // }
+              if (d.details.hue.localeCompare(d.colour)) {
+                console.log("hue check: " + d.rescueIndex + ": " + d.catId + " apiColour: " + d.details.hue + "(" + d.details.hueValue + ") <>" + d.hsv + " " + d.colour);
               }
               results.push(d);
-
-              // {
-              //   "rescueIndex": "0",
-              //   "catId": "0x00d658d50b",
-              //   "block": 4140409,
-              //   "tx": "0xd31d05adb302131f0c31f1a001685f29eb3b2b66d2af3b90d1e2c7f22661db61",
-              //   "timestamp": 1502370691,
-              //   "by": "0xedccc2ce220f286bf218390ad16e432d539e6890"
-              // }
-
             }
             return results;
           },
