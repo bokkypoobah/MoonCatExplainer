@@ -188,7 +188,7 @@ function getMoonCatColors(catId){
 }
 
 
-function getMoonCatHSV(catId){
+function getMoonCatHSL(catId){
   if(catId.slice(0,2) == "0x"){
     catId = catId.slice(2);
   }
